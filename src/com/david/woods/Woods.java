@@ -68,6 +68,13 @@ public class Woods
         if (hadError)
             return;
 
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+
+        // Check for resolver error
+        if (hadError)
+            return;
+
         interpreter.interpret(statements);
     }
 
