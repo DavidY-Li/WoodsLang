@@ -1,0 +1,9 @@
+// Variables
+var number = 10; // Numbers are always stored as a double precision floating point number
+var string = "Hello World!"; // String literal
+var nothing = null; // Obvious
+
+// Print statements
+print number;
+print string;
+print nothing;

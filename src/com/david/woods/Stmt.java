@@ -15,6 +15,22 @@ abstract class Stmt {
 
     final List<Stmt> statements;
   }
+  static class Class extends Stmt {
+    Class(Token name, Expr.Variable superclass, List<Stmt.Function> methods) {
+      this.name = name;
+      this.superclass = superclass;
+      this.methods = methods;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitClassStmt(this);
+    }
+
+    final Token name;
+    final Expr.Variable superclass;
+    final List<Stmt.Function> methods;
+  }
   static class Expression extends Stmt {
     Expression(Expr expression) {
       this.expression = expression;
@@ -115,6 +131,7 @@ abstract class Stmt {
   }
   interface Visitor<R> {
     R visitBlockStmt(Block stmt);
+    R visitClassStmt(Class stmt);
     R visitExpressionStmt(Expression stmt);
     R visitFunctionStmt(Function stmt);
     R visitIfStmt(If stmt);
