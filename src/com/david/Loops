@@ -1,0 +1,15 @@
+var current = 0;
+var temp;
+
+// Fibonacci sequence
+for (var b = 1; current < 10000; b = temp + b)
+{
+  // Print out
+  print current;
+
+  // Set temporary value to current value
+  temp = current;
+
+  // Update current value
+  current = b;
+}

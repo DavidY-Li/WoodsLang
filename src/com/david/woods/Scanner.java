@@ -26,7 +26,7 @@ class Scanner
         keywords.put("for",    FOR);
         keywords.put("fun",    FUN);
         keywords.put("if",     IF);
-        keywords.put("nil",    NIL);
+        keywords.put("null",    NULL);
         keywords.put("or",     OR);
         keywords.put("print",  PRINT);
         keywords.put("return", RETURN);

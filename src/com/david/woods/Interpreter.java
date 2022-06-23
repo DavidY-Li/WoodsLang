@@ -74,6 +74,37 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
         return evaluate(expr.right);
     }
 
+    @Override
+    public Object visitSetExpr(Expr.Set expr)
+    {
+        Object object = evaluate(expr.object);
+
+        if (!(object instanceof WoodsInstance))
+        {
+            throw new RuntimeError(expr.name, "Only instances have fields.");
+        }
+
+        Object value = evaluate(expr.value);
+        ((WoodsInstance)object).set(expr.name, value);
+        return value;
+    }
+
+    @Override
+    public Object visitSuperExpr(Expr.Super expr)
+    {
+        int distance = locals.get(expr);
+        WoodsClass superclass = (WoodsClass)environment.getAt(distance, "super");
+        WoodsInstance object = (WoodsInstance)environment.getAt(distance - 1, "this");
+
+        WoodsFunction method = superclass.findMethod(expr.method.lexeme);
+        return method.bind(object);
+    }
+
+    @Override
+    public Object visitThisExpr(Expr.This expr)
+    {
+        return lookUpVariable(expr.keyword, expr);
+    }
 
     @Override
     public Object visitUnaryExpr(Expr.Unary expr)
@@ -151,7 +182,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
     private String stringify(Object object)
     {
         if (object == null)
-            return "nil";
+            return "null";
 
         if (object instanceof Double)
         {
@@ -213,6 +244,46 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
     }
 
     @Override
+    public Void visitClassStmt(Stmt.Class stmt)
+    {
+        Object superclass = null;
+        if (stmt.superclass != null)
+        {
+            superclass = evaluate(stmt.superclass);
+            if (!(superclass instanceof WoodsClass))
+            {
+                throw new RuntimeError(stmt.superclass.name, "Superclass must be a class.");
+            }
+        }
+
+        environment.define(stmt.name.lexeme, null);
+
+        if (stmt.superclass != null)
+        {
+            environment = new Environment(environment);
+            environment.define("super", superclass);
+        }
+
+        Map<String, WoodsFunction> methods = new HashMap<>();
+        for (Stmt.Function method : stmt.methods)
+        {
+            WoodsFunction function = new WoodsFunction(method, environment, method.name.lexeme.equals("init"));
+            methods.put(method.name.lexeme, function);
+        }
+
+        WoodsClass klass = new WoodsClass(stmt.name.lexeme,
+                (WoodsClass)superclass, methods);
+
+        if (superclass != null)
+        {
+            environment = environment.enclosing;
+        }
+
+        environment.assign(stmt.name, klass);
+        return null;
+    }
+
+    @Override
     public Void visitExpressionStmt(Stmt.Expression stmt)
     {
         evaluate(stmt.expression);
@@ -222,7 +293,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt)
     {
-        WoodsFunction function = new WoodsFunction(stmt, environment);
+        WoodsFunction function = new WoodsFunction(stmt, environment, false);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
@@ -384,5 +455,16 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
         }
 
         return function.call(this, arguments);
+    }
+
+    @Override
+    public Object visitGetExpr(Expr.Get expr)
+    {
+        Object object = evaluate(expr.object);
+        if (object instanceof WoodsInstance) {
+            return ((WoodsInstance) object).get(expr.name);
+        }
+
+        throw new RuntimeError(expr.name, "Only instances have properties.");
     }
 }
