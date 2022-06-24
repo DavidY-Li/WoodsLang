@@ -1,9 +1,0 @@
-// Conditionals and comparison operators
-if (number < 20)
-{
-    print "The number is less than 20";
-}
-if (number != 20)
-{
-    print "The number doesn't equal 20";
-}

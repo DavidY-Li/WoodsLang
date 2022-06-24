@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GenerateAst" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.david.tools.GenerateAst" />
+    <module name="WoodsLang" />
+    <option name="PROGRAM_PARAMETERS" value="C:\Users\jonat\IdeaProjects\WoodsLang\src\com\david\woods" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
