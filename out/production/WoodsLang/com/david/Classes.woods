@@ -1,0 +1,31 @@
+// Shape class
+class Shape
+{
+    shapeInfo()
+    {
+        print "I'm a cool geometric object!!";
+    }
+}
+
+// Circle class inherits methods from shape class
+class Circle < Shape
+{
+    init(radius)
+    {
+        this.radius = radius;
+    }
+
+    printArea()
+    {
+        print "Area: " + str(3.141592653 * this.radius * this.radius); // Converts area from a double into a string
+    }
+}
+
+// Initialize circle with radius of 4
+var circle = Circle(4);
+
+// Call inherited method
+circle.shapeInfo();
+
+// Print circle area
+circle.printArea();

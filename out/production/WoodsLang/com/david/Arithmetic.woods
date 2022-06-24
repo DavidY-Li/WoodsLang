@@ -1,0 +1,7 @@
+print -(5 + 4 * 3 / 6); // -7
+
+var valueA = 98;
+var valueB = 99;
+var average = (valueA + valueB) / 2;
+
+print average; // 98.5
