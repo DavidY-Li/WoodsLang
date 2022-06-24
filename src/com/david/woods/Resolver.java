@@ -109,19 +109,18 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void>
     }
 
     @Override
-    public Void visitReturnStmt(Stmt.Return stmt)
-    {
-        if (currentFunction == FunctionType.NONE)
-        {
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        if (currentFunction == FunctionType.NONE) {
             Woods.error(stmt.keyword, "Can't return from top-level code.");
         }
 
-        if (stmt.value != null)
-        {
-            if (currentFunction == FunctionType.INITIALIZER)
-            {
-                Woods.error(stmt.keyword, "Can't return a value from an initializer.");
+        if (stmt.value != null) {
+            if (currentFunction == FunctionType.INITIALIZER) {
+                Woods.error(stmt.keyword,
+                        "Can't return a value from an initializer.");
             }
+
+            resolve(stmt.value);
         }
 
         return null;

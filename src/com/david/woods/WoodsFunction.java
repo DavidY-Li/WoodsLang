@@ -37,7 +37,7 @@ class WoodsFunction implements WoodsCallable
     }
 
     @Override
-    public Object call(Interpreter interpreter, List<Object> arguments)
+    public Object call(Interpreter interpreter, List<Object> arguments, int lineno)
     {
         Environment environment = new Environment(closure);
         for (int i = 0; i < declaration.params.size(); i++)

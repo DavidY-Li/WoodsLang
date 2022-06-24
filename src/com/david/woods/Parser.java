@@ -392,6 +392,7 @@ class Parser
                 {
                     error(peek(), "Can't have more than 255 arguments.");
                 }
+                arguments.add(expression());
             } while (match(COMMA));
         }
 

@@ -38,14 +38,14 @@ class WoodsClass implements WoodsCallable
     }
 
     @Override
-    public Object call(Interpreter interpreter, List<Object> arguments)
+    public Object call(Interpreter interpreter, List<Object> arguments, int lineno)
     {
         WoodsInstance instance = new WoodsInstance(this);
         WoodsFunction initializer = findMethod("init");
 
         if (initializer != null)
         {
-            initializer.bind(instance).call(interpreter, arguments);
+            initializer.bind(instance).call(interpreter, arguments, lineno);
         }
 
         return instance;

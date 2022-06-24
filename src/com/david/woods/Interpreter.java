@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
 {
@@ -22,9 +23,91 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
             }
 
             @Override
-            public Object call(Interpreter interpreter, List<Object> arguments)
+            public Object call(Interpreter interpreter, List<Object> arguments, int line)
             {
                 return (double)System.currentTimeMillis() / 1000.0;
+            }
+
+            @Override
+            public String toString()
+            { return "<native fn>";
+            }
+        });
+
+        globals.define("input", new WoodsCallable()
+        {
+            @Override
+            public int arity()
+            {
+                return 1;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments, int line)
+            {
+                System.out.print(stringify(arguments.get(0)));
+                Scanner scanner = new Scanner(System.in);
+                String userInput = scanner.nextLine();
+
+                return userInput;
+            }
+
+            @Override
+            public String toString()
+            { return "<native fn>";
+            }
+        });
+
+        globals.define("double", new WoodsCallable()
+        {
+            @Override
+            public int arity()
+            {
+                return 1;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments, int line)
+            {
+                try
+                {
+                    return Double.parseDouble(stringify(arguments.get(0)));
+                }
+                catch (ClassCastException error)
+                {
+                    throw new RuntimeError(new Token(TokenType.IDENTIFIER, "int", null, line), "Failed to cast argument into an int.");
+                }  catch (NumberFormatException err) {
+                    throw new RuntimeError(new Token(TokenType.IDENTIFIER, "int", null, line), "Argument to `int` is not a valid number.");
+                }
+            }
+
+            @Override
+            public String toString()
+            { return "<native fn>";
+            }
+        });
+
+        globals.define("str", new WoodsCallable()
+        {
+            @Override
+            public int arity()
+            {
+                return 1;
+            }
+
+            @Override
+            public Object call(Interpreter interpreter, List<Object> arguments, int line)
+            {
+                try
+                {
+                    return arguments.get(0).toString();
+                }
+                catch (ClassCastException error)
+                {
+                    throw new RuntimeError(new Token(TokenType.IDENTIFIER, "int", null, line), "Failed to cast argument into an int.");
+                }  catch (NumberFormatException err) {
+                    throw new RuntimeError(new Token(TokenType.IDENTIFIER, "int", null, line), "Argument to `int` is not a valid number.");
+                }
             }
 
             @Override
@@ -327,17 +410,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
         if (stmt.value != null) value = evaluate(stmt.value);
 
         throw new Return(value);
-    }
-
-    class Return extends RuntimeException
-    {
-        final Object value;
-
-        Return(Object value)
-        {
-            super(null, null, false, false);
-            this.value = value;
-        }
+        //throw new RuntimeError(stmt.keyword, "Random");
     }
 
     @Override
@@ -454,7 +527,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void>
                     arguments.size() + ".");
         }
 
-        return function.call(this, arguments);
+        return function.call(this, arguments, expr.paren.line);
     }
 
     @Override
